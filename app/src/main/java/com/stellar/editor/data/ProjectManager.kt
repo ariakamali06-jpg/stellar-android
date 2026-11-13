@@ -12,7 +12,15 @@ object ProjectManager {
 
     fun exportPageToBitmap(context: Context, page: Page, targetWidth: Int = 1080, targetHeight: Int = 1920): Bitmap {
         var baseBitmap: Bitmap? = null
-        if (!page.imageUri.isNullOrBlank()) {
+        if (!page.imagePath.isNullOrBlank()) {
+            try {
+                val f = File(page.imagePath)
+                if (f.exists()) {
+                    baseBitmap = BitmapFactory.decodeFile(f.absolutePath)
+                }
+            } catch (_: Exception) { }
+        }
+        if (baseBitmap == null && !page.imageUri.isNullOrBlank()) {
             try {
                 val uri = Uri.parse(page.imageUri)
                 context.contentResolver.openInputStream(uri)?.use { stream ->
@@ -188,6 +196,7 @@ object ProjectManager {
             pObj.put("id", page.id)
             pObj.put("pageNumber", page.pageNumber)
             pObj.put("imageUri", page.imageUri ?: "")
+            pObj.put("imagePath", page.imagePath ?: "")
             val itemsArray = JSONArray()
             for (item in page.textItems) {
                 val iObj = JSONObject()
@@ -205,10 +214,15 @@ object ProjectManager {
                 iObj.put("hasBubble", item.hasBubble)
                 iObj.put("bubbleShape", item.bubbleShape.name)
                 iObj.put("hasShadow", item.hasShadow)
+                iObj.put("shadowColor", item.shadowColor)
+                iObj.put("shadowOffsetX", item.shadowOffsetX.toDouble())
+                iObj.put("shadowOffsetY", item.shadowOffsetY.toDouble())
                 iObj.put("hasExtrusion", item.hasExtrusion)
+                iObj.put("extrusionDepth", item.extrusionDepth.toDouble())
                 iObj.put("isBold", item.isBold)
                 iObj.put("isItalic", item.isItalic)
                 iObj.put("alignment", item.alignment.name)
+                iObj.put("warpEffect", item.warpEffect.name)
                 iObj.put("rotation", item.rotation.toDouble())
                 itemsArray.put(iObj)
             }
@@ -217,5 +231,88 @@ object ProjectManager {
         }
         root.put("pages", pagesArray)
         return root.toString(2)
+    }
+
+    fun projectFromJson(jsonString: String): Project? {
+        return try {
+            val root = JSONObject(jsonString)
+            val name = root.optString("name", "پروژه مانگا ۱")
+            val pagesArray = root.optJSONArray("pages") ?: JSONArray()
+            val pages = mutableListOf<Page>()
+
+            for (i in 0 until pagesArray.length()) {
+                val pObj = pagesArray.getJSONObject(i)
+                val id = pObj.optString("id")
+                val pageNumber = pObj.optInt("pageNumber", i + 1)
+                val imageUri = pObj.optString("imageUri").takeIf { it.isNotBlank() }
+                val imagePath = pObj.optString("imagePath").takeIf { it.isNotBlank() }
+
+                val itemsArray = pObj.optJSONArray("textItems") ?: JSONArray()
+                val items = mutableListOf<TextItem>()
+
+                for (j in 0 until itemsArray.length()) {
+                    val iObj = itemsArray.getJSONObject(j)
+                    val bubbleShape = try {
+                        BubbleShape.valueOf(iObj.optString("bubbleShape", "ELLIPSE"))
+                    } catch (_: Exception) {
+                        BubbleShape.ELLIPSE
+                    }
+                    val alignment = try {
+                        AlignmentMode.valueOf(iObj.optString("alignment", "CENTER"))
+                    } catch (_: Exception) {
+                        AlignmentMode.CENTER
+                    }
+                    val warpEffect = try {
+                        WarpEffect.valueOf(iObj.optString("warpEffect", "NONE"))
+                    } catch (_: Exception) {
+                        WarpEffect.NONE
+                    }
+
+                    items.add(
+                        TextItem(
+                            id = iObj.optString("id"),
+                            text = iObj.optString("text", "متن"),
+                            x = iObj.optDouble("x", 100.0).toFloat(),
+                            y = iObj.optDouble("y", 100.0).toFloat(),
+                            width = iObj.optDouble("width", 220.0).toFloat(),
+                            height = iObj.optDouble("height", 120.0).toFloat(),
+                            fontSize = iObj.optDouble("fontSize", 22.0).toFloat(),
+                            fontColor = iObj.optLong("fontColor", 0xFF000000),
+                            bubbleColor = iObj.optLong("bubbleColor", 0xFFFFFFFF),
+                            strokeColor = iObj.optLong("strokeColor", 0xFF000000),
+                            strokeWidth = iObj.optDouble("strokeWidth", 3.0).toFloat(),
+                            hasBubble = iObj.optBoolean("hasBubble", true),
+                            bubbleShape = bubbleShape,
+                            hasShadow = iObj.optBoolean("hasShadow", false),
+                            shadowColor = iObj.optLong("shadowColor", 0x66000000),
+                            shadowOffsetX = iObj.optDouble("shadowOffsetX", 6.0).toFloat(),
+                            shadowOffsetY = iObj.optDouble("shadowOffsetY", 6.0).toFloat(),
+                            hasExtrusion = iObj.optBoolean("hasExtrusion", false),
+                            extrusionDepth = iObj.optDouble("extrusionDepth", 5.0).toFloat(),
+                            isBold = iObj.optBoolean("isBold", true),
+                            isItalic = iObj.optBoolean("isItalic", false),
+                            alignment = alignment,
+                            warpEffect = warpEffect,
+                            rotation = iObj.optDouble("rotation", 0.0).toFloat()
+                        )
+                    )
+                }
+
+                pages.add(
+                    Page(
+                        id = id,
+                        pageNumber = pageNumber,
+                        imageUri = imageUri,
+                        imagePath = imagePath,
+                        textItems = items
+                    )
+                )
+            }
+
+            if (pages.isEmpty()) pages.add(Page(pageNumber = 1))
+            Project(name = name, pages = pages)
+        } catch (_: Exception) {
+            null
+        }
     }
 }

@@ -1,11 +1,12 @@
 <resources>
     <string name="app_name">Stellar</string>
-    <style name="Theme.Stellar" parent="android:style/Theme.Material.NoActionBar">
+    <style name="Theme.Stellar" parent="Theme.MaterialComponents.NoActionBar">
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:statusBarColor">#0E1017</item>
         <item name="android:navigationBarColor">#0E1017</item>
         <item name="android:windowActionModeOverlay">true</item>
         <item name="android:windowBackground">#0E1017</item>
-        <item name="android:colorAccent">#6366F1</item>
+        <item name="colorPrimary">#6366F1</item>
+        <item name="colorAccent">#6366F1</item>
     </style>
 </resources>

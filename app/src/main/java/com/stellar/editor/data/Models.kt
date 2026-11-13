@@ -23,39 +23,40 @@ enum class WarpEffect(val displayName: String) {
 
 data class TextItem(
     val id: String = UUID.randomUUID().toString(),
-    var text: String = "متن جدید",
-    var x: Float = 100f,
-    var y: Float = 100f,
-    var width: Float = 220f,
-    var height: Float = 120f,
-    var fontSize: Float = 22f,
-    var fontColor: Long = 0xFF000000,       // ARGB Black
-    var bubbleColor: Long = 0xFFFFFFFF,     // ARGB White
-    var strokeColor: Long = 0xFF000000,     // ARGB Black
-    var strokeWidth: Float = 3f,
-    var hasBubble: Boolean = true,
-    var bubbleShape: BubbleShape = BubbleShape.ELLIPSE,
-    var hasShadow: Boolean = false,
-    var shadowColor: Long = 0x66000000,
-    var shadowOffsetX: Float = 6f,
-    var shadowOffsetY: Float = 6f,
-    var hasExtrusion: Boolean = false,
-    var extrusionDepth: Float = 5f,
-    var isBold: Boolean = true,
-    var isItalic: Boolean = false,
-    var alignment: AlignmentMode = AlignmentMode.CENTER,
-    var warpEffect: WarpEffect = WarpEffect.NONE,
-    var rotation: Float = 0f
+    val text: String = "متن جدید",
+    val x: Float = 100f,
+    val y: Float = 100f,
+    val width: Float = 220f,
+    val height: Float = 120f,
+    val fontSize: Float = 22f,
+    val fontColor: Long = 0xFF000000,
+    val bubbleColor: Long = 0xFFFFFFFF,
+    val strokeColor: Long = 0xFF000000,
+    val strokeWidth: Float = 3f,
+    val hasBubble: Boolean = true,
+    val bubbleShape: BubbleShape = BubbleShape.ELLIPSE,
+    val hasShadow: Boolean = false,
+    val shadowColor: Long = 0x66000000,
+    val shadowOffsetX: Float = 6f,
+    val shadowOffsetY: Float = 6f,
+    val hasExtrusion: Boolean = false,
+    val extrusionDepth: Float = 5f,
+    val isBold: Boolean = true,
+    val isItalic: Boolean = false,
+    val alignment: AlignmentMode = AlignmentMode.CENTER,
+    val warpEffect: WarpEffect = WarpEffect.NONE,
+    val rotation: Float = 0f
 )
 
 data class Page(
     val id: String = UUID.randomUUID().toString(),
-    var pageNumber: Int = 1,
-    var imageUri: String? = null,
-    val textItems: MutableList<TextItem> = mutableListOf()
+    val pageNumber: Int = 1,
+    val imageUri: String? = null,
+    val imagePath: String? = null,
+    val textItems: List<TextItem> = emptyList()
 )
 
 data class Project(
-    var name: String = "پروژه مانگا ۱",
-    val pages: MutableList<Page> = mutableListOf(Page(pageNumber = 1))
+    val name: String = "پروژه مانگا ۱",
+    val pages: List<Page> = listOf(Page(pageNumber = 1))
 )
