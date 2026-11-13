@@ -13,6 +13,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FormatAlignLeft
+import androidx.compose.material.icons.automirrored.filled.FormatAlignRight
 import androidx.compose.material.icons.automirrored.filled.Redo
 import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.*
@@ -268,7 +270,7 @@ fun EditorScreen(
                                         modifier = Modifier.size(32.dp)
                                     ) {
                                         Icon(
-                                            Icons.Default.FormatAlignLeft,
+                                            Icons.AutoMirrored.Filled.FormatAlignLeft,
                                             contentDescription = "چپ",
                                             tint = if (selectedItem.alignment == AlignmentMode.LEFT) IndigoAccent else TextMuted,
                                             modifier = Modifier.size(18.dp)
@@ -298,7 +300,7 @@ fun EditorScreen(
                                         modifier = Modifier.size(32.dp)
                                     ) {
                                         Icon(
-                                            Icons.Default.FormatAlignRight,
+                                            Icons.AutoMirrored.Filled.FormatAlignRight,
                                             contentDescription = "راست",
                                             tint = if (selectedItem.alignment == AlignmentMode.RIGHT) IndigoAccent else TextMuted,
                                             modifier = Modifier.size(18.dp)
